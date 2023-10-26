@@ -40,17 +40,17 @@ Files are organized into several directories:
 1. POST `/:user_id/checkout/:book_copy_id`
    This endpoint is used to checkout a book. The `:user_id` and `:book_copy_id` should be replaced with the actual IDs. The request does not require a body.
    Sample response body
-2. POST `/user_id/return/book_copy_id`
-   This endpoint is used to return a book. The `user_id` and `book_copy_id` should be replaced with the actual IDs. The request does not require a body. If the operation is successful, the response will be a 200 status code along with a success message. If the operation is not successful, the response will be an error message with an appropriate status code.
-3. GET `/user_id/checked-out`
-   This endpoint is used to get the books that are currently checked out by a user. The `user_id` should be replaced with the actual ID. The request does not require a body. The response will be a 200 status code along with a list of the books that are currently checked out by the user.
+2. POST `/:user_id/return/:book_copy_id`
+   This endpoint is used to return a book. The `:user_id` and `:book_copy_id` should be replaced with the actual IDs. The request does not require a body. If the operation is successful, the response will be a 200 status code along with a success message. If the operation is not successful, the response will be an error message with an appropriate status code.
+3. GET `/:user_id/checked-out`
+   This endpoint is used to get the books that are currently checked out by a user. The `:user_id` should be replaced with the actual ID. The request does not require a body. The response will be a 200 status code along with a list of the books that are currently checked out by the user.
 
 ### Librarian Routes
 
 1. POST `/books`
    This endpoint is used to add a book. The request should contain a body with the ISBN of the book. If the operation is successful, the response will be a 201 status code along with the details of the book and the book copy. If the operation is not successful, the response will be an error message with an appropriate status code.
-2. DELETE `/books/book_copy_id`
-   This endpoint is used to remove a book. The `book_copy_id` should be replaced with the actual ID. The request does not require a body. If the operation is successful, the response will be a 200 status code along with the details of the removed book copy. If the operation is not successful, the response will be an error message with an appropriate status code.
+2. DELETE `/books/:book_copy_id`
+   This endpoint is used to remove a book. The `:book_copy_id` should be replaced with the actual ID. The request does not require a body. If the operation is successful, the response will be a 200 status code along with the details of the removed book copy. If the operation is not successful, the response will be an error message with an appropriate status code.
 3. GET `/books/overdue`
    This endpoint is used to get the books that are currently overdue. The request does not require a body. The response will be a 200 status code along with a list of the overdue books.
 
