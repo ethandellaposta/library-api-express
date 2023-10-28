@@ -23,7 +23,6 @@ type BookQuery = {
 export class BooksService {
   private static instance: BooksService;
   private _books: Record<number, Book>;
-  private db: any;
 
   private constructor() {
     this._books = {};
@@ -49,18 +48,21 @@ export class BooksService {
 
     let book_from_isbn;
     try {
-      book_from_isbn = await isbn.provider(['openlibrary', 'google']).resolve(book.isbn);
+      book_from_isbn = await isbn.resolve(book.isbn);
     } catch (e) {
-      console.log({ e })
       throw new Error("Book not found");
     }
 
-    return this._books[id] = { ...book, id, title: book_from_isbn.title, author: book_from_isbn.authors[0].name };
+    if (!book_from_isbn) {
+      throw new Error("Book not found");
+    }
+
+    return this._books[id] = { ...book, id, title: book_from_isbn.title, author: book_from_isbn.authors[0] || "" };
   }
 
   update(id: number, book: Partial<Book>): Book {
-    const old_book = this._books[book.id];
-    return this._books[book.id] = { ...old_book, ...book };
+    const old_book = this._books[id];
+    return this._books[id] = { ...old_book, ...book };
   }
 
   get(book_id: number): Book | undefined {

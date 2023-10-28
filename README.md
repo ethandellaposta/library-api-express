@@ -25,8 +25,6 @@ The API will be running at `http://localhost:3000`.
 
 ## System Architecture
 
-The system is a RESTful API built with Express.js and TypeScript. It follows the MVC (Model-View-Controller) architecture, with the route definitions acting as the controllers, the services acting as the models, and the client that consumes the API acting as the view. 
-
 Files are organized into several directories:
 
 1. `controllers`: These files contain the functions that handle the HTTP requests and responses. Each function in this directory is associated with a specific REST API endpoint.

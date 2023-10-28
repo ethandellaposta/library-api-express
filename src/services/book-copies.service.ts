@@ -47,12 +47,12 @@ export class BookCopiesService {
     return this._book_copies[id] = { ...book_copy, id, status: 'available' };
   }
 
-  update(book_copy: Partial<BookCopy>): BookCopy {
-    const old_book_copy = this._book_copies[book_copy.id];
-    return this._book_copies[book_copy.id] = { ...old_book_copy, ...book_copy };
+  update(id: number, book_copy: Partial<BookCopy>): BookCopy {
+    const old_book_copy = this._book_copies[id];
+    return this._book_copies[id] = { ...old_book_copy, ...book_copy };
   }
 
-  get(book_id: number): BookCopy | undefined {
-    return this._book_copies[book_id];
+  get(book_copy_id: number): BookCopy | undefined {
+    return this._book_copies[book_copy_id];
   }
 }

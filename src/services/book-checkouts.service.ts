@@ -1,7 +1,6 @@
 import sift from "sift";
 import spacetime from "spacetime";
 
-
 export type BookCheckout = {
   id: number;
   book_copy_id: number;
@@ -46,13 +45,14 @@ export class BookCheckoutsService {
     return Object.values(this._book_checkouts).filter(sift(query)) as BookCheckout[];
   }
 
-  async create(book_checkout: Omit<BookCheckout, "id">): Promise<BookCheckout> {
+  create(book_checkout: Omit<BookCheckout, "id" | "checked_out_at">): BookCheckout {
     const id = Object.keys(this._book_checkouts).length + 1;
-    return this._book_checkouts[id] = { ...book_checkout, id, due_at: book_checkout.due_at || spacetime.now().add(2, 'week').toNativeDate() };
+
+    return this._book_checkouts[id] = { ...book_checkout, id, checked_out_at: new Date(), due_at: book_checkout.due_at || spacetime.now().add(2, 'week').toNativeDate() };
   }
 
-  update(book_checkout: Partial<BookCheckout>): BookCheckout {
-    const old_book_checkout = this._book_checkouts[book_checkout.id];
-    return this._book_checkouts[book_checkout.id] = { ...old_book_checkout, ...book_checkout };
+  update(id: number, book_checkout: Partial<BookCheckout>): BookCheckout {
+    const old_book_checkout = this._book_checkouts[id];
+    return this._book_checkouts[id] = { ...old_book_checkout, ...book_checkout };
   }
 }

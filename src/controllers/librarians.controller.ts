@@ -25,24 +25,19 @@ export async function add_book(req: Request, res: Response, next: NextFunction) 
 }
 
 export function remove_book(req: Request, res: Response, next: NextFunction) {
-  const book_copy_id = parseInt(req.params.book_id, 10);
+  const book_copy_id = parseInt(req.params.book_copy_id, 10);
   const book_copy = req.context.services.book_copies.get(book_copy_id);
 
   if (!book_copy) {
     return next(new HttpException(404, "Book not found."))
   }
 
-  const is_copy_checked_out = req.context.services.book_checkouts.find({
-    book_copy_id,
-    returned_at: null,
-  })[0] !== undefined;
-
-  if (is_copy_checked_out) {
+  if (book_copy.status === "checked_out") {
     return next(new HttpException(400, "Cannot remove a checked out book."))
   }
 
-  const new_book_copy = { ...book_copy, removed_date: new Date() };
-  const updated_book_copy = req.context.services.book_copies.update(new_book_copy);
+  const new_book_copy = { ...book_copy, removed_at: new Date() };
+  const updated_book_copy = req.context.services.book_copies.update(book_copy.id, new_book_copy);
 
   res.status(200).json(updated_book_copy);
 }
@@ -53,5 +48,5 @@ export function get_overdue_books(req: Request, res: Response) {
     returned_at: null
   });
 
-  res.status(200).json({ overdue: overdue_checkouts });
+  res.status(200).json(overdue_checkouts);
 }
