@@ -10,6 +10,7 @@ export type BookCheckout = {
   due_at?: Date | null;
 };
 
+// Query operators for advanced book checkout search.
 type QueryOperators<T = Date | number> = T | {
   $lt?: T;
   $lte?: T;
@@ -34,6 +35,7 @@ export class BookCheckoutsService {
     this._book_checkouts = {};
   }
 
+  // Singleton pattern to ensure only one instance of the service exists.
   public static get_instance(): BookCheckoutsService {
     if (!BookCheckoutsService.instance) {
       BookCheckoutsService.instance = new BookCheckoutsService();
@@ -41,6 +43,7 @@ export class BookCheckoutsService {
     return BookCheckoutsService.instance;
   }
 
+  // Find book checkouts matching the provided query.
   find(query: BookCheckoutQuery): BookCheckout[] {
     return Object.values(this._book_checkouts).filter(sift(query)) as BookCheckout[];
   }

@@ -6,7 +6,7 @@ import { checkout_book, get_checked_out_books, return_book } from './users.contr
 import { mock_request } from '../utils/mock-request';
 import { HttpException } from '../middleware/error.middleware';
 
-const BASE_URL = `/api/v1/users`;
+const BASE_URL = `/api/users`;
 const PATRON_USER_ID = 2;
 const PATRON_USER_ID_2 = 3;
 

@@ -1,6 +1,7 @@
 import { Response, Request, NextFunction } from 'express';
 import { HttpException } from '../middleware/error.middleware';
 
+// checks out a book copy for a specific user
 export const checkout_book = (req: Request, res: Response, next: NextFunction) => {
   const user_id = parseInt(req.params.user_id, 10);
   const book_copy_id = parseInt(req.params.book_copy_id, 10);
@@ -37,6 +38,7 @@ export const checkout_book = (req: Request, res: Response, next: NextFunction) =
   res.status(201).json({ ...created_checkout });
 }
 
+// returns a book copy for a specific user
 export const return_book = (req: Request, res: Response, next: NextFunction) => {
   const user_id = parseInt(req.params.user_id, 10);
   const book_copy_id = parseInt(req.params.book_copy_id, 10);
@@ -66,6 +68,7 @@ export const return_book = (req: Request, res: Response, next: NextFunction) => 
   res.status(200).json({ message: "Book returned successfully." });
 }
 
+// gets all user's currently checked out books
 export const get_checked_out_books = (req: Request, res: Response) => {
   const user_id = parseInt(req.params.user_id, 10);
 

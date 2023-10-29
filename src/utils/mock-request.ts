@@ -17,6 +17,7 @@ function create_services() {
   }
 }
 
+// creates mocked values of controller function parameters
 export function mock_request({ params, body }: { params?: any; body?: any; services: any; }) {
   const services = create_services();
   const request = {

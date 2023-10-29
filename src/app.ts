@@ -1,9 +1,10 @@
 import express from 'express';
 import body_parser from 'body-parser';
 import logger from 'morgan';
+import helmet from 'helmet'
 
-import { librarians_router } from './routes/v1/librarians.route';
-import { users_router } from './routes/v1/users.route';
+import { librarians_router } from './routes/librarians.route';
+import { users_router } from './routes/users.route';
 import { is_librarian_middleware } from './middleware/is-librarian.middleware';
 import { init_services_middleware } from './middleware/init-services.middleware';
 import { BooksService } from './services/books.service';
@@ -28,13 +29,14 @@ declare module "express-serve-static-core" {
 export const app = express();
 app.use(body_parser.json());
 app.use(logger('dev'));
+app.use(helmet());
 app.use(init_services_middleware);
 
-const api_v1_router: express.Router = express.Router();
-app.use('/api/v1', api_v1_router);
+const api_router: express.Router = express.Router();
+app.use('/api', api_router);
 
-api_v1_router.use('/librarians', is_librarian_middleware, librarians_router);
-api_v1_router.use('/users', users_router);
+api_router.use('/librarians', is_librarian_middleware, librarians_router);
+api_router.use('/users', users_router);
 
-api_v1_router.use(error_middleware);
+api_router.use(error_middleware);
 

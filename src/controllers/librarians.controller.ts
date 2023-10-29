@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../middleware/error.middleware';
 
+// adds new book copy and or new book to the library by ISBN
 export async function add_book(req: Request, res: Response, next: NextFunction) {
   if (!req.body || !req.body.isbn) {
     return next(new HttpException(400, "ISBN is required."));
@@ -24,6 +25,7 @@ export async function add_book(req: Request, res: Response, next: NextFunction) 
   res.status(201).json({ ...book, copy: book_copy });
 }
 
+// removes book copy from library
 export function remove_book(req: Request, res: Response, next: NextFunction) {
   const book_copy_id = parseInt(req.params.book_copy_id, 10);
   const book_copy = req.context.services.book_copies.get(book_copy_id);
@@ -42,6 +44,7 @@ export function remove_book(req: Request, res: Response, next: NextFunction) {
   res.status(200).json(updated_book_copy);
 }
 
+// gets all book checkouts that are overdue
 export function get_overdue_books(req: Request, res: Response) {
   const overdue_checkouts = req.context.services.book_checkouts.find({
     due_at: { $lt: new Date() },

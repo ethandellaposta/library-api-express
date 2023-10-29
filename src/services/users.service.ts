@@ -8,7 +8,6 @@ export class UsersService {
   private static instance: UsersService;
   private _users: Record<number, User>;
 
-  // Private constructor to prevent new instances
   private constructor() {
     this._users = {
       1: {
@@ -34,6 +33,7 @@ export class UsersService {
     };
   }
 
+  // Singleton pattern to ensure only one instance of the service exists.
   public static get_instance(): UsersService {
     if (!UsersService.instance) {
       UsersService.instance = new UsersService();
@@ -41,7 +41,7 @@ export class UsersService {
     return UsersService.instance;
   }
 
-  // Method to get a specific user by ID
+  // Retrieve a user by its ID.
   get(user_id: number): User | undefined {
     return this._users[user_id];
   }

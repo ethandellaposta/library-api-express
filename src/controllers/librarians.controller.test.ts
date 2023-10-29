@@ -8,7 +8,7 @@ import { create_services } from '../utils/create-services';
 const SORCERERS_STONE_ISBN = "9780590353427";
 const CHAMBER_OF_SECRETS_ISBN = "9780439064866";
 
-export const BASE_URL = `/api/v1/librarians`;
+export const BASE_URL = `/api/librarians`;
 const LIBRARIAN_USER_ID = 1;
 const PATRON_USER_ID = 2;
 
