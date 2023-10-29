@@ -51,8 +51,8 @@ export class BookCheckoutsService {
     return this._book_checkouts[id] = { ...book_checkout, id, checked_out_at: new Date(), due_at: book_checkout.due_at || spacetime.now().add(2, 'week').toNativeDate() };
   }
 
-  update(id: number, book_checkout: Partial<BookCheckout>): BookCheckout {
-    const old_book_checkout = this._book_checkouts[id];
-    return this._book_checkouts[id] = { ...old_book_checkout, ...book_checkout };
+  update(book_checkout_id: number, book_checkout: Partial<BookCheckout>): BookCheckout {
+    const old_book_checkout = this._book_checkouts[book_checkout_id];
+    return this._book_checkouts[book_checkout_id] = { ...old_book_checkout, ...book_checkout };
   }
 }

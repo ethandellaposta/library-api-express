@@ -60,9 +60,9 @@ export class BooksService {
     return this._books[id] = { ...book, id, title: book_from_isbn.title, author: book_from_isbn.authors[0] || "" };
   }
 
-  update(id: number, book: Partial<Book>): Book {
-    const old_book = this._books[id];
-    return this._books[id] = { ...old_book, ...book };
+  update(book_id: number, book: Partial<Book>): Book {
+    const old_book = this._books[book_id];
+    return this._books[book_id] = { ...old_book, ...book };
   }
 
   get(book_id: number): Book | undefined {
