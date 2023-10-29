@@ -79,7 +79,7 @@ type User = {
 
 Each librarian endpoint requires a `user_id` query parameter with the value of the librarian's ID to simulate authorization as a librarian. All other users are of type `patron`. Please refer to the list of user IDs below:
 
-```json
+```typescript
 {
   1: {
     id: 1,
