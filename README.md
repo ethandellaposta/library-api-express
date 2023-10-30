@@ -1,5 +1,3 @@
-Here's the README with corrected indenting:
-
 # Library API
 
 This is a RESTful API for a library system. It allows users to checkout and return books, and librarians to add and remove books.
@@ -117,79 +115,70 @@ Each librarian endpoint requires a `user_id` query parameter with the value of t
   }
 }
 ```
-1. <strong>POST</strong> `/api/librarians/books?user_id=:librarian_user_id`
+
+1. **POST** `/api/librarians/books?user_id=:librarian_user_id`
+   
    This endpoint is used to add a new book to the library.
 
-   <br/>
-
-   <strong>Request body:</strong>
+   **Request body:**
    ```json
    {
      "isbn" 152637485762
    }
    ```
-   <strong> Response types:</strong>
+   
+   **Response types:**
    - `403`: If the user is not a librarian
    - `400`: If the request body is missing or the ISBN is not provided in the request body.
    - `400`: If the ISBN provided does not exist.
    - `201`: If the book is successfully added. Returns the newly created Book object. This endpoint uses the `node-isbn` package to get a book's information from its ISBN.
-<br/>
-2. <strong>DELETE</strong> `/api/librarians/books/:book_id?user_id=:librarian_user_id`
 
+2. **DELETE** `/api/librarians/books/:book_id?user_id=:librarian_user_id`
+   
    This endpoint is used to remove a book from the library.
 
-   <br/>
-
-   <strong>Response types:</strong>
+   **Response types:**
    - `403`: If the user is not a librarian
    - `404`: If the book with the provided ID does not exist.
    - `400`: If the book is already removed.
    - `400`: If the book is currently checked out.
    - `200`: If the book is successfully removed. Returns the updated Book object.
-<br/>
-3. <strong>GET</strong> `/api/librarians/books/overdue?user_id=:librarian_user_id`
 
-   This endpoint is used to get the books that are currently overdue. The request does not require a body.
+3. **GET** `/api/librarians/books/overdue?user_id=:librarian_user_id`
    
-   <br/>
+   This endpoint is used to get the books that are currently overdue. The request does not require a body.
 
-   <strong>Response types:</strong>
+   **Response types:**
    - `403`: If the user is not a librarian
    - `200`: If the request is successful. Returns an array of overdue books.
 
 ### User Routes
 
-1. <strong>POST</strong> `/api/users/:user_id/checkout/:book_id`
-
+1. **POST** `/api/users/:user_id/checkout/:book_id`
+   
    This endpoint is used to checkout a book. The `:user_id` and `:book_id` should be replaced with the actual IDs.
 
-   <br/>
-
-   <strong>Response types:</strong>
+   **Response types:**
    - `404`: If the book with the provided ID does not exist.
    - `400`: If the book is removed.
    - `400`: If the book is already checked out.
    - `400`: If the user already has 3 books checked out.
    - `400`: If the user has overdue books.
    - `201`: If the book is successfully checked out. Returns the newly created checkout object.
-<br/>
-2. <strong>POST</strong> `/api/users/:user_id/return/:book_id`
 
+2. **POST** `/api/users/:user_id/return/:book_id`
+   
    This endpoint is used to return a book. The `:user_id` and `:book_id` should be replaced with the actual IDs.
 
-   <br/>
-
-   <strong>Response types:</strong>
+   **Response types:**
    - `404`: If the book with the provided ID does not exist.
    - `400`: If the book is not checked out.
    - `400`: If the book is not checked out by the user.
-   - `200`: If the book is successfully returned. Returns a message "Book returned successfully."
-<br/>
-3. <strong>GET</strong> `/api/users/:user_id/checked-out`
+   - `200`: If the book is successfully returned. Returns updated checkout object.
 
+3. **GET** `/api/users/:user_id/checked-out`
+   
    This endpoint is used to get the books that are currently checked out by a user. The `:user_id` should be replaced with the actual ID.
 
-   <br/>
-
-    <strong>Response types:</strong>
-    - `200`: If the request is successful. Returns an array of checked out books.
+   **Response types:**
+   - `200`: If the request is successful. Returns an array of checked out books.
