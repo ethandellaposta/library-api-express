@@ -88,6 +88,9 @@ The data model is currently implemented using in memory objects, for the sake of
 
 ## API Endpoints
 
+> [!NOTE]  
+> A rate limiter middlware is used to limit a client to a maximum of 50 requests within any given 15 minute window.
+
 ### Librarian Routes
 
 Each librarian endpoint requires a `user_id` query parameter with the value of the librarian's ID to simulate authorization as a librarian. All other users are of type `patron`. Please refer to the list of hardcoded user IDs available by default:
@@ -145,9 +148,9 @@ Each librarian endpoint requires a `user_id` query parameter with the value of t
    - `400`: If the book is currently checked out.
    - `200`: If the book is successfully removed. Returns the updated Book object.
 
-3. **GET** `/api/librarians/books/overdue?user_id=:librarian_user_id`
+3. **GET** `/api/librarians/books/overdue?user_id=:librarian_user_id&skip=:skip&limit=:limit`
    
-   This endpoint is used to get the books that are currently overdue. The request does not require a body.
+   This endpoint is used to get the books that are currently overdue. The request does not require a body, but uses optional pagination query parameters `skip` and `limit`. These default to 0 and 50.
 
    **Response types:**
    - `403`: If the user is not a librarian
