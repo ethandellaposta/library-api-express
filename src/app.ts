@@ -33,8 +33,8 @@ app.use(init_services_middleware);
 
 const fifteen_minutes_ms = 15 * 60 * 1000;
 const limiter = express_rate_limit({
-  windowMs: fifteen_minutes_ms, // 15 minutes
-  max: 50, // Limit each IP to 100 requests per windowMs
+  windowMs: fifteen_minutes_ms,
+  max: 50,
 });
 app.use(limiter);
 
