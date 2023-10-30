@@ -6,8 +6,8 @@ This is a RESTful API for a library system. It allows users to checkout and retu
 
 1. Clone the repository to your local machine.
    ```bash
-   git clone <repository_url>
-   cd <repository_name>
+   git@github.com:ethandellaposta/library-api-express.git
+   cd library-api-express
    ```
 
 2. Install the dependencies.
