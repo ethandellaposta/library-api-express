@@ -19,8 +19,9 @@ This is a RESTful API for a library system. It allows users to checkout and retu
    ```bash
    npm run dev
    ```
+   You can use whichever HTTP client you prefer to interact with the API (I use Postman).
 
-4. Run Jest tests.
+4 (Optional). Run Jest tests.
    ```bash
    npm run test
    ```
