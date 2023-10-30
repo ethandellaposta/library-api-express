@@ -5,8 +5,8 @@ import { HttpException } from '../middleware/error.middleware';
 import { mock_request } from '../utils/mock-request';
 import { create_services } from '../utils/create-services';
 
-const SORCERERS_STONE_ISBN = "9780590353427";
-const CHAMBER_OF_SECRETS_ISBN = "9780439064866";
+const SORCERERS_STONE_ISBN = 9780590353427;
+const CHAMBER_OF_SECRETS_ISBN = 9780439064866;
 
 export const BASE_URL = `/api/librarians`;
 const LIBRARIAN_USER_ID = 1;
@@ -81,9 +81,7 @@ describe('Librarians Controller', () => {
     });
 
     it('should handle removing a non-existent book gracefully', async () => {
-      const non_existent_book_copy_id = 9999;
-
-      const mock = mock_request({ params: { book_copy_id: non_existent_book_copy_id }, services })
+      const mock = mock_request({ params: { book_id: 9999 }, services })
 
       await remove_book(mock.request, mock.response, mock.next);
 
@@ -91,29 +89,21 @@ describe('Librarians Controller', () => {
     });
 
     it('should return 400 if book is checked out', async () => {
-      const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN })
-      const created_book_copy = services.book_copies.create({ book_id: created_book.id })
-      await services.book_copies.update(created_book_copy.id, { status: "checked_out" })
+      const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN });
+      await services.books.update(created_book.id, { status: "checked_out" });
 
-      const mock = mock_request({ params: { book_copy_id: created_book_copy.id }, services })
-      remove_book(mock.request, mock.response, mock.next)
+      const mock = mock_request({ params: { book_id: created_book.id }, services });
+      remove_book(mock.request, mock.response, mock.next);
 
       expect(mock.next).toBeCalledWith(new HttpException(400, "Cannot remove a checked out book."));
     });
 
     it('should allow a librarian to remove a book', async () => {
       const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN })
-      const created_book_copy = services.book_copies.create({ book_id: created_book.id })
-      const req = {
-
-        context: {
-          services
-        }
-      } as any;
 
       const mock = mock_request({
         params: {
-          book_copy_id: created_book_copy.id
+          book_id: created_book.id
         },
         services
       })
@@ -142,13 +132,12 @@ describe('Librarians Controller', () => {
 
     it('should return 200 with overdue books', async () => {
       const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN })
-      const created_book_copy = services.book_copies.create({ book_id: created_book.id })
       const due_at_past = new Date();
       const due_at_future = new Date();
       due_at_past.setDate(due_at_past.getDate() - 1);
       due_at_future.setDate(due_at_future.getDate() + 1);
-      const created_book_checkout_overdue = services.book_checkouts.create({ book_copy_id: created_book_copy.id, user_id: PATRON_USER_ID, due_at: due_at_past });
-      const created_book_checkout_not_overdue = services.book_checkouts.create({ book_copy_id: created_book_copy.id, user_id: PATRON_USER_ID, due_at: due_at_future });
+      const created_book_checkout_overdue = services.book_checkouts.create({ book_id: created_book.id, user_id: PATRON_USER_ID, due_at: due_at_past });
+      const created_book_checkout_not_overdue = services.book_checkouts.create({ book_id: created_book.id, user_id: PATRON_USER_ID, due_at: due_at_future });
 
       const mock = mock_request({ services })
       get_overdue_books(mock.request, mock.response)

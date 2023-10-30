@@ -7,6 +7,11 @@ describe('UsersService', () => {
     service = UsersService.get_instance();
   });
 
+  it('should ensure singleton pattern', () => {
+    const anotherInstance = UsersService.get_instance();
+    expect(service).toBe(anotherInstance);
+  });
+
   describe('get', () => {
     it('should get a user by id', () => {
       const user = service.get(1);

@@ -1,22 +1,22 @@
 import { Response, Request, NextFunction } from 'express';
 import { HttpException } from '../middleware/error.middleware';
 
-// checks out a book copy for a specific user
+// checks out a book for a specific user
 export const checkout_book = (req: Request, res: Response, next: NextFunction) => {
   const user_id = parseInt(req.params.user_id, 10);
-  const book_copy_id = parseInt(req.params.book_copy_id, 10);
-  const book_copies_service = req.context.services.book_copies;
-  const book_copy = book_copies_service.get(book_copy_id);
+  const book_id = parseInt(req.params.book_id, 10);
+  const books_service = req.context.services.books;
+  const book = books_service.get(book_id);
 
-  if (!book_copy) {
+  if (!book) {
     next(new HttpException(404, "Book not found."))
   }
 
-  if (book_copy.removed_at) {
+  if (book.removed_at) {
     return next(new HttpException(400, "Cannot checkout removed book."))
   }
 
-  if (book_copy.status === "checked_out") {
+  if (book.status === "checked_out") {
     return next(new HttpException(400, "Book is already checked out."))
   }
 
@@ -31,30 +31,29 @@ export const checkout_book = (req: Request, res: Response, next: NextFunction) =
     return next(new HttpException(400, "User has overdue books."))
   }
 
-  const new_checked_out_book = { book_copy_id, user_id, checked_out_at: new Date(), }
-  const created_checkout = req.context.services.book_checkouts.create(new_checked_out_book);
+  const created_checkout = req.context.services.book_checkouts.create({ book_id, user_id });
 
-  req.context.services.book_copies.update(book_copy.id, { ...book_copy, status: "checked_out" });
+  req.context.services.books.update(book.id, { status: "checked_out" });
   res.status(201).json({ ...created_checkout });
 }
 
-// returns a book copy for a specific user
+// returns a book for a specific user
 export const return_book = (req: Request, res: Response, next: NextFunction) => {
   const user_id = parseInt(req.params.user_id, 10);
-  const book_copy_id = parseInt(req.params.book_copy_id, 10);
-  const book_copies_service = req.context.services.book_copies;
-  const book_copy = book_copies_service.get(book_copy_id);
+  const book_id = parseInt(req.params.book_id, 10);
+  const books_service = req.context.services.books;
+  const book = books_service.get(book_id);
 
-  if (!book_copy) {
+  if (!book) {
     return next(new HttpException(404, "Book not found."))
   }
 
-  if (book_copy.status !== "checked_out") {
+  if (book.status !== "checked_out") {
     return next(new HttpException(400, "Book not checked out."))
   }
 
   const checked_out_book = req.context.services.book_checkouts.find({
-    book_copy_id,
+    book_id,
     returned_at: null,
   }).sort((a, b) => b.id - a.id)[0];
 
@@ -62,8 +61,8 @@ export const return_book = (req: Request, res: Response, next: NextFunction) => 
     return next(new HttpException(400, "Book is not checked out by the user."))
   }
 
-  req.context.services.book_checkouts.update(checked_out_book.id, { ...checked_out_book, returned_at: new Date() });
-  req.context.services.book_copies.update(book_copy.id, { ...book_copy, status: "available" });
+  req.context.services.book_checkouts.update(checked_out_book.id, { returned_at: new Date() });
+  req.context.services.books.update(book.id, { status: "available" });
 
   res.status(200).json({ message: "Book returned successfully." });
 }

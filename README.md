@@ -38,28 +38,30 @@ Files are organized into the following directories:
 The API uses the following data model:
 
 - `Book`: represents a specific ISBN
-- `BookCopy`: represents a specific copy of a book
-- `BookCheckout`: represents a present/past checked out book copy
+- `ISBNBook`: represents information tied to ISBN (author, title)
+- `BookCheckout`: represents a past or presently checked out book
 - `User`: represents a user
 
 ```typescript
 type Book = {
   id: number;
-  isbn: string;
-  title: string;
+  isbn: number; // references ISBNBook.isbn
+  title: string; // from ISBNBook
+  author: string; // from ISBNBook
   author: string;
-};
-
-type BookCopy = {
-  id: number;
-  book_id: number; // references Book.id
   status: 'available' | 'checked_out' | 'removed';
   removed_at?: Date | null;
 };
 
+type ISBNBook = {
+ isbn: number;
+ title: string;
+ author: string;
+};
+
 type BookCheckout = {
   id: number;
-  book_copy_id: number; // references BookCopy.id
+  book_id: number; // references Book.id
   user_id: number; // references User.id
   checked_out_at: Date;
   returned_at?: Date | null;
@@ -106,17 +108,17 @@ Each librarian endpoint requires a `user_id` query parameter with the value of t
 
 1. POST `/books`
    This endpoint is used to add a new book to the library. The request should contain a body with the ISBN of the book. This API uses the `node-isbn` package to get a book's information from its ISBN.
-2. DELETE `/books/:book_copy_id`
-   This endpoint is used to remove a book copy from the library. The `:book_copy_id` should be replaced with the actual ID.
+2. DELETE `/books/:book_id`
+   This endpoint is used to remove a book from the library. The `:book_id` should be replaced with the actual ID.
 3. GET `/books/overdue`
    This endpoint is used to get the books that are currently overdue. The request does not require a body.
 
 ### User Routes
 
-1. POST `/:user_id/checkout/:book_copy_id`
-   This endpoint is used to checkout a book. The `:user_id` and `:book_copy_id` should be replaced with the actual IDs.
-2. POST `/:user_id/return/:book_copy_id`
-   This endpoint is used to return a book. The `:user_id` and `:book_copy_id` should be replaced with the actual IDs.
+1. POST `/:user_id/checkout/:book_id`
+   This endpoint is used to checkout a book. The `:user_id` and `:book_id` should be replaced with the actual IDs.
+2. POST `/:user_id/return/:book_id`
+   This endpoint is used to return a book. The `:user_id` and `:book_id` should be replaced with the actual IDs.
 3. GET `/:user_id/checked-out`
    This endpoint is used to get the books that are currently checked out by a user. The `:user_id` should be replaced with the actual ID.
 

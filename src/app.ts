@@ -10,7 +10,6 @@ import { init_services_middleware } from './middleware/init-services.middleware'
 import { BooksService } from './services/books.service';
 import { UsersService } from './services/users.service';
 import { BookCheckoutsService } from './services/book-checkouts.service';
-import { BookCopiesService } from './services/book-copies.service';
 import { error_middleware } from './middleware/error.middleware';
 
 declare module "express-serve-static-core" {
@@ -18,7 +17,6 @@ declare module "express-serve-static-core" {
     context: {
       services: {
         books: BooksService,
-        book_copies: BookCopiesService
         users: UsersService,
         book_checkouts: BookCheckoutsService
       };

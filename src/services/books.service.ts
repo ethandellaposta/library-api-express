@@ -1,11 +1,13 @@
 import sift from "sift";
-import isbn from "node-isbn";
+import { ISBNBooksService } from "./isbn-books.service";
 
 export type Book = {
   id: number;
-  isbn: string;
-  title: string;
-  author: string;
+  isbn: number;
+  title?: string;
+  author?: string;
+  status: 'available' | 'checked_out' | 'removed';
+  removed_at?: Date | null;
 };
 
 // Query operators for advanced book search.
@@ -24,9 +26,11 @@ type BookQuery = {
 export class BooksService {
   private static instance: BooksService;
   private _books: Record<number, Book>;
+  private _isbn_books: ISBNBooksService;
 
-  private constructor() {
+  private constructor(isbn_books: ISBNBooksService) {
     this._books = {};
+    this._isbn_books = isbn_books;
   }
 
   public reset() {
@@ -34,30 +38,29 @@ export class BooksService {
   }
 
   // Singleton pattern to ensure only one instance of the service exists.
-  public static get_instance(): BooksService {
+  public static get_instance(isbn_books: ISBNBooksService): BooksService {
     if (!BooksService.instance) {
-      BooksService.instance = new BooksService();
+      BooksService.instance = new BooksService(isbn_books);
     }
     return BooksService.instance;
   }
 
   // Find books matching the provided query.
   find(query: BookQuery): Book[] {
-    return Object.values(this._books).filter(sift(query)) as Book[];
+    return Object.values(this._books).map(book => ({ ...book, ...this._isbn_books.get(book.isbn) })).filter(sift(query)) as Book[];
   }
 
   // Create a book using its ISBN, fetching additional details.
-  async create(book: { isbn: string }): Promise<Book> {
+  async create(book: { isbn: number }): Promise<Book> {
     const id = Object.keys(this._books).length + 1;
-    let book_from_isbn;
-
-    try {
-      book_from_isbn = await isbn.resolve(book.isbn);
-    } catch (e) {
-      throw new Error("Book not found");
+    let isbn_book = this._isbn_books.get(book.isbn);
+    if (!isbn_book) {
+      isbn_book = await this._isbn_books.create(book.isbn);
     }
-
-    return this._books[id] = { ...book, id, title: book_from_isbn.title, author: book_from_isbn.authors[0] || "" };
+    const created_book = this._books[id] = { id, isbn: book.isbn, status: "available" };
+    return {
+      ...created_book, ...isbn_book
+    }
   }
 
   // Update details of an existing book.
@@ -68,6 +71,10 @@ export class BooksService {
 
   // Retrieve a book by its ID.
   get(book_id: number): Book | undefined {
-    return this._books[book_id];
+    const book = this._books[book_id];
+    if (!book) {
+      return undefined;
+    }
+    return { ...book, ...this._isbn_books.get(book.isbn) };
   }
 }

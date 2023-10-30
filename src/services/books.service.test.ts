@@ -1,9 +1,16 @@
 import { BooksService } from './books.service';
+import { ISBNBooksService } from './isbn-books.service';
 
-const CHAMBER_OF_SECRETS_ISBN = "9780439064866";
+const CHAMBER_OF_SECRETS_ISBN = 9780439064866;
 
 describe('BooksService', () => {
-  let service: BooksService = BooksService.get_instance();
+  let isbn_books_service: ISBNBooksService = ISBNBooksService.get_instance();
+  let service: BooksService = BooksService.get_instance(isbn_books_service);
+
+  it('should ensure singleton pattern', () => {
+    const anotherInstance = BooksService.get_instance(isbn_books_service);
+    expect(service).toBe(anotherInstance);
+  });
 
   describe('create', () => {
     beforeEach(() => {
@@ -17,11 +24,12 @@ describe('BooksService', () => {
         isbn: CHAMBER_OF_SECRETS_ISBN,
         title: 'Harry Potter and the Chamber of Secrets',
         author: 'J. K. Rowling',
+        status: 'available',
       });
     });
 
     it('should throw an error if book not found', async () => {
-      await expect(service.create({ isbn: 'invalid_isbn' })).rejects.toThrow('Book not found');
+      await expect(service.create({ isbn: 182873748949837 })).rejects.toThrow('Book not found');
     });
   });
 
@@ -31,8 +39,8 @@ describe('BooksService', () => {
     });
     it('should update a book', async () => {
       const book = await service.create({ isbn: CHAMBER_OF_SECRETS_ISBN });
-      const updated_book = service.update(book.id, { title: 'Updated Title' });
-      expect(updated_book.title).toEqual("Updated Title");
+      const updated_book = service.update(book.id, { status: 'checked_out' });
+      expect(updated_book.status).toEqual("checked_out");
     });
   });
 

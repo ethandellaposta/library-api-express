@@ -3,7 +3,7 @@ import spacetime from "spacetime";
 
 export type BookCheckout = {
   id: number;
-  book_copy_id: number;
+  book_id: number;
   user_id: number;
   checked_out_at: Date;
   returned_at?: Date | null;

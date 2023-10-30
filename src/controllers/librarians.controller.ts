@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { HttpException } from '../middleware/error.middleware';
 
-// adds new book copy and or new book to the library by ISBN
+// adds new book and or new book to the library by ISBN
 export async function add_book(req: Request, res: Response, next: NextFunction) {
   if (!req.body || !req.body.isbn) {
     return next(new HttpException(400, "ISBN is required."));
@@ -19,29 +19,27 @@ export async function add_book(req: Request, res: Response, next: NextFunction) 
     }
   }
 
-  const book_copy = req.context.services.book_copies.create({ book_id });
   const book = req.context.services.books.get(book_id);
 
-  res.status(201).json({ ...book, copy: book_copy });
+  res.status(201).json({ ...book });
 }
 
-// removes book copy from library
+// removes book from library
 export function remove_book(req: Request, res: Response, next: NextFunction) {
-  const book_copy_id = parseInt(req.params.book_copy_id, 10);
-  const book_copy = req.context.services.book_copies.get(book_copy_id);
+  const book_id = parseInt(req.params.book_id, 10);
+  const book = req.context.services.books.get(book_id);
 
-  if (!book_copy) {
+  if (!book) {
     return next(new HttpException(404, "Book not found."))
   }
 
-  if (book_copy.status === "checked_out") {
+  if (book.status === "checked_out") {
     return next(new HttpException(400, "Cannot remove a checked out book."))
   }
 
-  const new_book_copy = { ...book_copy, removed_at: new Date() };
-  const updated_book_copy = req.context.services.book_copies.update(book_copy.id, new_book_copy);
+  const updated_book = req.context.services.books.update(book.id, { ...book, removed_at: new Date() });
 
-  res.status(200).json(updated_book_copy);
+  res.status(200).json(updated_book);
 }
 
 // gets all book checkouts that are overdue
