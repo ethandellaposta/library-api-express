@@ -1,3 +1,5 @@
+Here's the README with corrected indenting:
+
 # Library API
 
 This is a RESTful API for a library system. It allows users to checkout and return books, and librarians to add and remove books.
@@ -9,38 +11,46 @@ This is a RESTful API for a library system. It allows users to checkout and retu
    git clone <repository_url>
    cd <repository_name>
    ```
+
 2. Install the dependencies.
    ```bash
    npm install
    ```
+
 3. Start the API.
    ```bash
    npm run dev
+   ```
+
 4. Run Jest tests.
    ```bash
    npm run test
    ```
-The API will be running at `http://localhost:3000`.
 
+The API will be running at `http://localhost:3000`.
 
 ## Project Structure
 
 Files are organized into the following directories:
 
-1. `controllers`: These files contain the functions that handle the HTTP requests and responses for specified endpoints
+1. `controllers`: These files contain the functions that handle the HTTP requests and responses for specified endpoints.
+
 2. `routes`: These files contain the route definitions for the REST API endpoints. Each route definition specifies the HTTP method and URL pattern for an endpoint and associates it with a function from the `controllers` directory.
-3. `services`: These files contain the functions that interact with the data. Each method in these files perform a specific operation on the data, such as creating, reading, updating, or deleting a record. The data is currently stored in memory, but it can be changed to use a persisting data source without affecting outside code.
+
+3. `services`: These files contain the functions that interact with the data. Each method in these files performs a specific operation on the data, such as creating, reading, updating, or deleting a record. The data is currently stored in memory, but it can be changed to use a persisting data source without affecting outside code.
+
 4. `middleware`: These files contain middleware functions used for error handling and authorization.
+
 5. `utils`: These files contain functionality used in several locations.
 
 ### Data model
 
 The API uses the following data model:
 
-- `Book`: represents a specific ISBN
-- `ISBNBook`: represents information tied to ISBN (author, title)
-- `BookCheckout`: represents a past or presently checked out book
-- `User`: represents a user
+- `Book`: represents a specific ISBN.
+- `ISBNBook`: represents information tied to ISBN (author, title).
+- `BookCheckout`: represents a past or presently checked out book.
+- `User`: represents a user.
 
 ```typescript
 type Book = {
@@ -75,11 +85,13 @@ type User = {
 };
 ```
 
+The data model is currently implemented using in memory objects, for the sake of this code challenge. Each "collection" can be interfaced through a service, including MongoDB-like query syntax for each service find method. In the future, this can be migrated to use a real MongoDB instance without affecting code outside of the services.
+
 ## API Endpoints
 
 ### Librarian Routes
 
-Each librarian endpoint requires a `user_id` query parameter with the value of the librarian's ID to simulate authorization as a librarian. All other users are of type `patron`. Please refer to the list of user IDs below:
+Each librarian endpoint requires a `user_id` query parameter with the value of the librarian's ID to simulate authorization as a librarian. All other users are of type `patron`. Please refer to the list of hardcoded user IDs available by default:
 
 ```typescript
 {
@@ -105,21 +117,79 @@ Each librarian endpoint requires a `user_id` query parameter with the value of t
   }
 }
 ```
+1. <strong>POST</strong> `/api/librarians/books?user_id=:librarian_user_id`
+   This endpoint is used to add a new book to the library.
 
-1. POST `/books`
-   This endpoint is used to add a new book to the library. The request should contain a body with the ISBN of the book. This API uses the `node-isbn` package to get a book's information from its ISBN.
-2. DELETE `/books/:book_id`
-   This endpoint is used to remove a book from the library. The `:book_id` should be replaced with the actual ID.
-3. GET `/books/overdue`
+   <br/>
+
+   <strong>Request body:</strong>
+   ```json
+   {
+     "isbn" 152637485762
+   }
+   ```
+   <strong> Response types:</strong>
+   - `403`: If the user is not a librarian
+   - `400`: If the request body is missing or the ISBN is not provided in the request body.
+   - `400`: If the ISBN provided does not exist.
+   - `201`: If the book is successfully added. Returns the newly created Book object. This endpoint uses the `node-isbn` package to get a book's information from its ISBN.
+<br/>
+2. <strong>DELETE</strong> `/api/librarians/books/:book_id?user_id=:librarian_user_id`
+
+   This endpoint is used to remove a book from the library.
+
+   <br/>
+
+   <strong>Response types:</strong>
+   - `403`: If the user is not a librarian
+   - `404`: If the book with the provided ID does not exist.
+   - `400`: If the book is already removed.
+   - `400`: If the book is currently checked out.
+   - `200`: If the book is successfully removed. Returns the updated Book object.
+<br/>
+3. <strong>GET</strong> `/api/librarians/books/overdue?user_id=:librarian_user_id`
+
    This endpoint is used to get the books that are currently overdue. The request does not require a body.
+   
+   <br/>
+
+   <strong>Response types:</strong>
+   - `403`: If the user is not a librarian
+   - `200`: If the request is successful. Returns an array of overdue books.
 
 ### User Routes
 
-1. POST `/:user_id/checkout/:book_id`
+1. <strong>POST</strong> `/api/users/:user_id/checkout/:book_id`
+
    This endpoint is used to checkout a book. The `:user_id` and `:book_id` should be replaced with the actual IDs.
-2. POST `/:user_id/return/:book_id`
+
+   <br/>
+
+   <strong>Response types:</strong>
+   - `404`: If the book with the provided ID does not exist.
+   - `400`: If the book is removed.
+   - `400`: If the book is already checked out.
+   - `400`: If the user already has 3 books checked out.
+   - `400`: If the user has overdue books.
+   - `201`: If the book is successfully checked out. Returns the newly created checkout object.
+<br/>
+2. <strong>POST</strong> `/api/users/:user_id/return/:book_id`
+
    This endpoint is used to return a book. The `:user_id` and `:book_id` should be replaced with the actual IDs.
-3. GET `/:user_id/checked-out`
+
+   <br/>
+
+   <strong>Response types:</strong>
+   - `404`: If the book with the provided ID does not exist.
+   - `400`: If the book is not checked out.
+   - `400`: If the book is not checked out by the user.
+   - `200`: If the book is successfully returned. Returns a message "Book returned successfully."
+<br/>
+3. <strong>GET</strong> `/api/users/:user_id/checked-out`
+
    This endpoint is used to get the books that are currently checked out by a user. The `:user_id` should be replaced with the actual ID.
 
+   <br/>
 
+    <strong>Response types:</strong>
+    - `200`: If the request is successful. Returns an array of checked out books.

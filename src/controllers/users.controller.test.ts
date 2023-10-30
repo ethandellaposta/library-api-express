@@ -35,20 +35,20 @@ describe('Users Controller', () => {
 
     it('should return 400 if book is removed', async () => {
       const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN });
-      services.books.update(created_book.id, { removed_at: new Date(), status: "removed" })
+      services.books.update(created_book.id, { removed_at: new Date(), status: "removed" });
 
-      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } })
-      checkout_book(mock.request, mock.response, mock.next)
-      expect(mock.next).toBeCalledWith(new HttpException(400, "Cannot checkout removed book."))
+      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } });
+      checkout_book(mock.request, mock.response, mock.next);
+      expect(mock.next).toBeCalledWith(new HttpException(400, "Cannot checkout removed book."));
     });
 
     it('should return 400 if book is already checked out', async () => {
       const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN });
       services.books.update(created_book.id, { status: "checked_out" })
 
-      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } })
-      checkout_book(mock.request, mock.response, mock.next)
-      expect(mock.next).toBeCalledWith(new HttpException(400, "Book is already checked out."))
+      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } });
+      checkout_book(mock.request, mock.response, mock.next);
+      expect(mock.next).toBeCalledWith(new HttpException(400, "Book is already checked out."));
     });
 
     it('should return 400 if user has overdue books', async () => {
@@ -59,9 +59,9 @@ describe('Users Controller', () => {
         due_at: spacetime.now().subtract(1, 'week').toNativeDate(),
       });
 
-      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } })
-      checkout_book(mock.request, mock.response, mock.next)
-      expect(mock.next).toBeCalledWith(new HttpException(400, "User has overdue books."))
+      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } });
+      checkout_book(mock.request, mock.response, mock.next);
+      expect(mock.next).toBeCalledWith(new HttpException(400, "User has overdue books."));
     })
 
     it('should return 400 if user has 3 books checked out', async () => {
@@ -83,24 +83,24 @@ describe('Users Controller', () => {
         book_id: created_book_3.id,
       });
 
-      const mock = mock_request({ services, params: { book_id: created_book_4.id, user_id: PATRON_USER_ID } })
-      checkout_book(mock.request, mock.response, mock.next)
-      expect(mock.next).toBeCalledWith(new HttpException(400, "User already has 3 books checked out."))
+      const mock = mock_request({ services, params: { book_id: created_book_4.id, user_id: PATRON_USER_ID } });
+      checkout_book(mock.request, mock.response, mock.next);
+      expect(mock.next).toBeCalledWith(new HttpException(400, "User already has 3 books checked out."));
     });
 
     it('should checkout book successfully', async () => {
       const created_book = await services.books.create({ isbn: MOBY_DICK_ISBN });
 
-      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } })
-      checkout_book(mock.request, mock.response, mock.next)
+      const mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } });
+      checkout_book(mock.request, mock.response, mock.next);
 
-      expect(mock.response.status).toBeCalledWith(201)
-      expect(mock.response.json).toBeCalledWith(expect.objectContaining({ book_id: created_book.id }))
+      expect(mock.response.status).toBeCalledWith(201);
+      expect(mock.response.json).toBeCalledWith(expect.objectContaining({ book_id: created_book.id }));
 
       const checkouts = services.book_checkouts.find({
         user_id: PATRON_USER_ID,
         returned_at: null,
-      })
+      });
       expect(checkouts.length).toBe(1);
       expect(checkouts[0].book_id).toBe(created_book.id);
     });
@@ -114,7 +114,7 @@ describe('Users Controller', () => {
     it('should return 404 if book does not exist', async () => {
       const mock = mock_request({ services, params: { book_id: 9999, user_id: PATRON_USER_ID } });
       return_book(mock.request, mock.response, mock.next);
-      expect(mock.next).toBeCalledWith(new HttpException(404, "Book not found."))
+      expect(mock.next).toBeCalledWith(new HttpException(404, "Book not found."));
     });
 
     it('should return 400 if book is not checked out by the user', async () => {
@@ -125,7 +125,7 @@ describe('Users Controller', () => {
 
       const return_mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } });
       return_book(return_mock.request, return_mock.response, return_mock.next);
-      expect(return_mock.next).toBeCalledWith(new HttpException(400, "Book is not checked out by the user."))
+      expect(return_mock.next).toBeCalledWith(new HttpException(400, "Book is not checked out by the user."));
     });
 
     it('should return book successfully', async () => {
@@ -137,7 +137,7 @@ describe('Users Controller', () => {
       const return_mock = mock_request({ services, params: { book_id: created_book.id, user_id: PATRON_USER_ID } });
       return_book(return_mock.request, return_mock.response, return_mock.next);
       expect(return_mock.response.status).toBeCalledWith(200);
-      expect(return_mock.response.json).toBeCalledWith(expect.objectContaining({ message: "Book returned successfully." }));
+      expect(return_mock.response.json).toBeCalledWith(expect.objectContaining({ book_id: created_book.id, user_id: PATRON_USER_ID, returned_at: expect.anything() }));
     });
   });
 

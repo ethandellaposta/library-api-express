@@ -2,6 +2,7 @@ import express from 'express';
 import body_parser from 'body-parser';
 import logger from 'morgan';
 import helmet from 'helmet'
+import express_rate_limit from 'express-rate-limit';
 
 import { librarians_router } from './routes/librarians.route';
 import { users_router } from './routes/users.route';
@@ -29,6 +30,13 @@ app.use(body_parser.json());
 app.use(logger('dev'));
 app.use(helmet());
 app.use(init_services_middleware);
+
+const fifteen_minutes_ms = 15 * 60 * 1000;
+const limiter = express_rate_limit({
+  windowMs: fifteen_minutes_ms, // 15 minutes
+  max: 50, // Limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
 
 const api_router: express.Router = express.Router();
 app.use('/api', api_router);

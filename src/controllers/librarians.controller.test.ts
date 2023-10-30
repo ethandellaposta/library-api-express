@@ -51,7 +51,7 @@ describe('Librarians Controller', () => {
 
       const response = await request(app).post(`${BASE_URL}/books`).send(body).query(query);
       expect(response.status).toBe(400);
-      expect(response.body.message).toEqual("ISBN not found.");
+      expect(response.body.message).toEqual("Invalid ISBN.");
     });
 
     it('should return 200 with created book', async () => {
@@ -80,13 +80,23 @@ describe('Librarians Controller', () => {
       expect(response.body).toEqual({ message: "You do not have permission to access this resource." });
     });
 
-    it('should handle removing a non-existent book gracefully', async () => {
+    it('should return 404 if book doesn\'t exist', async () => {
       const mock = mock_request({ params: { book_id: 9999 }, services })
 
       await remove_book(mock.request, mock.response, mock.next);
 
       expect(mock.next).toBeCalledWith(new HttpException(404, "Book not found."));
     });
+
+    it('should return 400 if book is already removed', async () => {
+      const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN });
+      await services.books.update(created_book.id, { status: "removed" });
+
+      const mock = mock_request({ params: { book_id: created_book.id }, services });
+      remove_book(mock.request, mock.response, mock.next);
+
+      expect(mock.next).toBeCalledWith(new HttpException(400, "Book already removed."));
+    })
 
     it('should return 400 if book is checked out', async () => {
       const created_book = await services.books.create({ isbn: CHAMBER_OF_SECRETS_ISBN });

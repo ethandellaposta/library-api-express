@@ -29,7 +29,7 @@ describe('BooksService', () => {
     });
 
     it('should throw an error if book not found', async () => {
-      await expect(service.create({ isbn: 182873748949837 })).rejects.toThrow('Book not found');
+      await expect(service.create({ isbn: 182873748949837 })).rejects.toThrow('Invalid ISBN.');
     });
   });
 

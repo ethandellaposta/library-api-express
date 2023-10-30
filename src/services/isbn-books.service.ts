@@ -28,10 +28,14 @@ export class ISBNBooksService {
     try {
       book = await node_isbn.resolve(isbn);
     } catch (e) {
-      throw new Error("Book not found");
+      throw new Error("Invalid ISBN.");
     }
 
-    const isbn_book = { isbn, title: book.title, author: book.authors[0] };
+    const isbn_book = {
+      isbn,
+      title: book.title,
+      author: book.authors[0]
+    };
     this._isbn_books[isbn] = isbn_book;
 
     return isbn_book;

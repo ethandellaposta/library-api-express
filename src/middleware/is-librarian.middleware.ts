@@ -8,7 +8,7 @@ export function is_librarian_middleware(req: Request, res: Response, next: NextF
 
   if (!user || user.type !== "librarian") {
     return res.status(403).json({ message: "You do not have permission to access this resource." });
-  }
+  };
 
   next();
 };

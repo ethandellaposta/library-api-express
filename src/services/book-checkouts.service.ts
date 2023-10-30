@@ -19,9 +19,17 @@ type QueryOperators<T = Date | number> = T | {
   $eq?: T;
 };
 
-type BookCheckoutQuery = {
+type BookCheckoutMappedQuery = {
   [K in keyof BookCheckout]?: QueryOperators<BookCheckout[K]>;
 };
+
+type PaginationProperties = {
+  $skip?: number;
+  $limit?: number;
+};
+
+type BookCheckoutQuery = BookCheckoutMappedQuery & PaginationProperties;
+
 
 export class BookCheckoutsService {
   private static instance: BookCheckoutsService;
@@ -45,17 +53,32 @@ export class BookCheckoutsService {
 
   // Find book checkouts matching the provided query.
   find(query: BookCheckoutQuery): BookCheckout[] {
-    return Object.values(this._book_checkouts).filter(sift(query)) as BookCheckout[];
+    const { $skip, $limit, ...query_no_pagination } = query;
+    const skip = $skip || 0;
+    const limit = $limit || 50;
+
+    // Very inefficient pagination, but it works for our purposes.
+    return Object
+      .values(this._book_checkouts)
+      .filter(sift(query_no_pagination))
+      .slice(skip, skip + limit);
   }
 
   create(book_checkout: Omit<BookCheckout, "id" | "checked_out_at">): BookCheckout {
     const id = Object.keys(this._book_checkouts).length + 1;
 
-    return this._book_checkouts[id] = { ...book_checkout, id, checked_out_at: new Date(), due_at: book_checkout.due_at || spacetime.now().add(2, 'week').toNativeDate() };
+    return this._book_checkouts[id] = {
+      ...book_checkout,
+      id, checked_out_at: new Date(),
+      due_at: book_checkout.due_at || spacetime.now().add(2, 'week').toNativeDate()
+    };
   }
 
   update(book_checkout_id: number, book_checkout: Partial<BookCheckout>): BookCheckout {
     const old_book_checkout = this._book_checkouts[book_checkout_id];
-    return this._book_checkouts[book_checkout_id] = { ...old_book_checkout, ...book_checkout };
+    return this._book_checkouts[book_checkout_id] = {
+      ...old_book_checkout,
+      ...book_checkout
+    };
   }
 }

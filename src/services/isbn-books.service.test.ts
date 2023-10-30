@@ -39,7 +39,7 @@ describe('ISBNBooksService', () => {
       node_isbn.resolve.mockRejectedValue(new Error('Some error'));
 
       const isbn = 987654321;
-      await expect(service.create(isbn)).rejects.toThrow('Book not found');
+      await expect(service.create(isbn)).rejects.toThrow('Invalid ISBN.');
     });
   });
 

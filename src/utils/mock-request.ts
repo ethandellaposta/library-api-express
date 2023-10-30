@@ -1,7 +1,7 @@
 import { create_services } from "./create-services";
 
 // creates mocked values of controller function parameters
-export function mock_request({ params, body }: { params?: any; body?: any; services: any; }) {
+export function mock_request({ params, body, query }: { params?: any; query?: any; body?: any; services: any; }) {
   const services = create_services();
   const request = {
     params: {
@@ -10,10 +10,13 @@ export function mock_request({ params, body }: { params?: any; body?: any; servi
     body: {
       ...body
     },
+    query: {
+      ...query
+    },
     context: {
       services
     }
-  } as any
+  } as any;
   const response = {
     status: jest.fn(() => response),
     json: jest.fn(() => response)

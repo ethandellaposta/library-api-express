@@ -57,9 +57,14 @@ export class BooksService {
     if (!isbn_book) {
       isbn_book = await this._isbn_books.create(book.isbn);
     }
-    const created_book = this._books[id] = { id, isbn: book.isbn, status: "available" };
+    const created_book = this._books[id] = {
+      id,
+      isbn: book.isbn,
+      status: "available"
+    };
     return {
-      ...created_book, ...isbn_book
+      ...created_book,
+      ...isbn_book
     }
   }
 
@@ -75,6 +80,9 @@ export class BooksService {
     if (!book) {
       return undefined;
     }
-    return { ...book, ...this._isbn_books.get(book.isbn) };
+    return {
+      ...book,
+      ...this._isbn_books.get(book.isbn)
+    };
   }
 }

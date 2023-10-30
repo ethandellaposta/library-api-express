@@ -21,5 +21,5 @@ export function error_middleware(error: HttpException, request: Request, respons
     .send({
       status,
       message,
-    })
+    });
 }
